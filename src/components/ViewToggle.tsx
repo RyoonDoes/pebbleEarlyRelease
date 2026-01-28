@@ -1,6 +1,6 @@
-import { LayoutGrid, Calendar } from "lucide-react";
+import { LayoutGrid, Calendar, GitBranch } from "lucide-react";
 
-type ViewType = "command" | "timetable";
+type ViewType = "command" | "timetable" | "model";
 
 interface ViewToggleProps {
   activeView: ViewType;
@@ -36,6 +36,20 @@ export function ViewToggle({ activeView, onViewChange }: ViewToggleProps) {
       >
         <Calendar className="w-4 h-4" />
         <span>Timetable</span>
+      </button>
+      
+      <button
+        onClick={() => onViewChange("model")}
+        className={`
+          flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-smooth
+          ${activeView === "model" 
+            ? "bg-background text-foreground shadow-sm" 
+            : "text-muted-foreground hover:text-foreground"
+          }
+        `}
+      >
+        <GitBranch className="w-4 h-4" />
+        <span>Model</span>
       </button>
     </div>
   );

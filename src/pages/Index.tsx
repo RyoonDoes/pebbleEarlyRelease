@@ -6,8 +6,10 @@ import { TimetableSlot } from "@/components/TimetableSlot";
 import { FoodLogInput } from "@/components/FoodLogInput";
 import { CausalModelStatus } from "@/components/CausalModelStatus";
 import { WhatIfQuery } from "@/components/WhatIfQuery";
+import { CausalModelImport, type CausalModel } from "@/components/CausalModelImport";
+import { CausalModelView } from "@/components/CausalModelView";
 
-type ViewType = "command" | "timetable";
+type ViewType = "command" | "timetable" | "model";
 
 const mockCommands = [
   {
@@ -47,7 +49,9 @@ const mockTimetable = [
 export default function Index() {
   const [activeView, setActiveView] = useState<ViewType>("command");
   const [isWhatIfOpen, setIsWhatIfOpen] = useState(false);
+  const [isImportOpen, setIsImportOpen] = useState(false);
   const [commands, setCommands] = useState(mockCommands);
+  const [causalModel, setCausalModel] = useState<CausalModel | null>(null);
 
   const handleDismissCommand = (id: string) => {
     setCommands(commands.filter(cmd => cmd.id !== id));
@@ -68,7 +72,13 @@ export default function Index() {
       
       <main className="container max-w-2xl mx-auto px-4 py-6 space-y-6">
         {/* Model status */}
-        <CausalModelStatus />
+        <CausalModelStatus 
+          modelName={causalModel?.name ? `${causalModel.name}.txt` : undefined}
+          nodeCount={causalModel?.nodes.length}
+          lastUpdated={causalModel ? "just now" : undefined}
+          isLoaded={!!causalModel}
+          onImportClick={() => setIsImportOpen(true)}
+        />
 
         {/* View toggle */}
         <div className="flex items-center justify-between">
@@ -133,10 +143,25 @@ export default function Index() {
             ))}
           </div>
         )}
+
+        {/* Model View */}
+        {activeView === "model" && (
+          <CausalModelView 
+            model={causalModel} 
+            onImportClick={() => setIsImportOpen(true)} 
+          />
+        )}
       </main>
 
       {/* What-if query modal */}
       <WhatIfQuery isOpen={isWhatIfOpen} onClose={() => setIsWhatIfOpen(false)} />
+      
+      {/* Import modal */}
+      <CausalModelImport 
+        isOpen={isImportOpen} 
+        onClose={() => setIsImportOpen(false)}
+        onImport={setCausalModel}
+      />
     </div>
   );
 }

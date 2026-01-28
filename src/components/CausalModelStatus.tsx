@@ -1,17 +1,20 @@
-import { FileText, CheckCircle, AlertCircle } from "lucide-react";
+import { FileText, CheckCircle, AlertCircle, Upload } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface CausalModelStatusProps {
   modelName?: string;
   nodeCount?: number;
   lastUpdated?: string;
   isLoaded?: boolean;
+  onImportClick?: () => void;
 }
 
 export function CausalModelStatus({
-  modelName = "personal_biology_v3.txt",
-  nodeCount = 47,
-  lastUpdated = "2 days ago",
-  isLoaded = true,
+  modelName = "No model loaded",
+  nodeCount = 0,
+  lastUpdated = "never",
+  isLoaded = false,
+  onImportClick,
 }: CausalModelStatusProps) {
   return (
     <div className="flex items-center gap-3 px-4 py-3 bg-muted/30 rounded-lg border border-border">
@@ -32,9 +35,16 @@ export function CausalModelStatus({
           )}
         </div>
         <p className="text-xs text-muted-foreground">
-          {nodeCount} nodes • Updated {lastUpdated}
+          {isLoaded ? `${nodeCount} nodes • Updated ${lastUpdated}` : "Import a model to begin"}
         </p>
       </div>
+      
+      {!isLoaded && onImportClick && (
+        <Button variant="outline" size="sm" onClick={onImportClick} className="gap-1.5">
+          <Upload className="w-3.5 h-3.5" />
+          Import
+        </Button>
+      )}
     </div>
   );
 }

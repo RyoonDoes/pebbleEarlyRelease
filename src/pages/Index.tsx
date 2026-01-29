@@ -6,65 +6,27 @@ import { TimetableSlot } from "@/components/TimetableSlot";
 import { FoodLogInput } from "@/components/FoodLogInput";
 import { CausalModelStatus } from "@/components/CausalModelStatus";
 import { WhatIfQuery } from "@/components/WhatIfQuery";
-import { CausalModelImport, type CausalModel } from "@/components/CausalModelImport";
+import { CausalModelImport } from "@/components/CausalModelImport";
 import { CausalModelView } from "@/components/CausalModelView";
+import { usePebbleState } from "@/hooks/usePebbleState";
 
 type ViewType = "command" | "timetable" | "model";
-
-const mockCommands = [
-  {
-    id: "1",
-    title: "EAT THIS NOW",
-    description: "300g beef mince + glass of whole milk. Pan-fry the mince with minimal oil.",
-    timeLabel: "NOW",
-    causalNote: "Protein + iron timing aligned with cortisol trough for optimal absorption",
-    isPrimary: true,
-  },
-  {
-    id: "2",
-    title: "PREPARE FOR TOMORROW",
-    description: "Defrost 400g salmon fillet from freezer. Move to refrigerator section.",
-    timeLabel: "Before 10 PM",
-    causalNote: "Omega-3 intake scheduled for tomorrow's inflammation window",
-    isPrimary: false,
-  },
-  {
-    id: "3",
-    title: "HYDRATION CHECK",
-    description: "500ml water. You've had 1.2L today, target is 2.5L based on activity level.",
-    timeLabel: "Within 2 hours",
-    isPrimary: false,
-  },
-];
-
-const mockTimetable = [
-  { time: "07:00", action: "Morning hydration: 500ml water with lemon", status: "completed" as const, causalImpact: "Cortisol modulation" },
-  { time: "08:30", action: "Breakfast: Eggs + spinach + avocado", status: "completed" as const },
-  { time: "12:00", action: "Lunch: 300g beef mince + milk", status: "active" as const, causalImpact: "Iron absorption window" },
-  { time: "15:00", action: "Snack: Handful of nuts + dark chocolate", status: "pending" as const },
-  { time: "18:30", action: "Dinner: 200g salmon + vegetables", status: "pending" as const },
-  { time: "21:00", action: "Magnesium supplement + chamomile", status: "pending" as const },
-];
 
 export default function Index() {
   const [activeView, setActiveView] = useState<ViewType>("command");
   const [isWhatIfOpen, setIsWhatIfOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
-  const [commands, setCommands] = useState(mockCommands);
-  const [causalModel, setCausalModel] = useState<CausalModel | null>(null);
-
-  const handleDismissCommand = (id: string) => {
-    setCommands(commands.filter(cmd => cmd.id !== id));
-  };
-
-  const handleExecuteCommand = (id: string) => {
-    setCommands(commands.filter(cmd => cmd.id !== id));
-  };
-
-  const handleFoodLog = (input: string) => {
-    console.log("Food logged:", input);
-    // In real app, this would process and update state
-  };
+  
+  const {
+    commands,
+    timetable,
+    causalModel,
+    executeCommand,
+    dismissCommand,
+    logFood,
+    markTimetableComplete,
+    setCausalModel,
+  } = usePebbleState();
 
   return (
     <div className="min-h-screen bg-background">
@@ -102,8 +64,8 @@ export default function Index() {
                     timeLabel={command.timeLabel}
                     causalNote={command.causalNote}
                     isPrimary={command.isPrimary}
-                    onExecute={() => handleExecuteCommand(command.id)}
-                    onDismiss={() => handleDismissCommand(command.id)}
+                    onExecute={() => executeCommand(command.id)}
+                    onDismiss={() => dismissCommand(command.id)}
                   />
                 ))}
               </div>
@@ -121,7 +83,7 @@ export default function Index() {
               <p className="text-xs font-mono text-muted-foreground mb-3 uppercase tracking-wider">
                 Quick Log
               </p>
-              <FoodLogInput onSubmit={handleFoodLog} />
+              <FoodLogInput onSubmit={logFood} />
             </div>
           </div>
         )}
@@ -132,13 +94,14 @@ export default function Index() {
             <p className="text-xs font-mono text-muted-foreground mb-4 uppercase tracking-wider">
               Today's Schedule
             </p>
-            {mockTimetable.map((slot, index) => (
+            {timetable.map((slot) => (
               <TimetableSlot
-                key={index}
+                key={slot.id}
                 time={slot.time}
                 action={slot.action}
                 status={slot.status}
                 causalImpact={slot.causalImpact}
+                onComplete={slot.status !== "completed" ? () => markTimetableComplete(slot.id) : undefined}
               />
             ))}
           </div>
@@ -154,7 +117,11 @@ export default function Index() {
       </main>
 
       {/* What-if query modal */}
-      <WhatIfQuery isOpen={isWhatIfOpen} onClose={() => setIsWhatIfOpen(false)} />
+      <WhatIfQuery 
+        isOpen={isWhatIfOpen} 
+        onClose={() => setIsWhatIfOpen(false)} 
+        causalModel={causalModel}
+      />
       
       {/* Import modal */}
       <CausalModelImport 

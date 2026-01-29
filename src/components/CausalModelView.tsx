@@ -7,8 +7,11 @@ import {
   Target,
   Zap,
   Activity,
-  Filter
+  Filter,
+  Network,
+  List
 } from "lucide-react";
+import { CausalGraphView } from "./CausalGraphView";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { CausalModel } from "./CausalModelImport";
@@ -19,11 +22,13 @@ interface CausalModelViewProps {
 }
 
 type NodeFilter = "all" | "input" | "intermediate" | "output" | "goal";
+type ViewMode = "list" | "graph";
 
 export function CausalModelView({ model, onImportClick }: CausalModelViewProps) {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<NodeFilter>("all");
   const [search, setSearch] = useState("");
+  const [viewMode, setViewMode] = useState<ViewMode>("graph");
 
   if (!model) {
     return (
@@ -112,10 +117,52 @@ export function CausalModelView({ model, onImportClick }: CausalModelViewProps) 
             {model.nodes.length} nodes • {model.edges.length} edges
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={onImportClick}>
-          Replace
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* View mode toggle */}
+          <div className="flex items-center bg-muted rounded-lg p-1">
+            <button
+              onClick={() => setViewMode("graph")}
+              className={`
+                p-1.5 rounded transition-smooth
+                ${viewMode === "graph" 
+                  ? "bg-background text-foreground shadow-sm" 
+                  : "text-muted-foreground hover:text-foreground"
+                }
+              `}
+              title="Graph View"
+            >
+              <Network className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={`
+                p-1.5 rounded transition-smooth
+                ${viewMode === "list" 
+                  ? "bg-background text-foreground shadow-sm" 
+                  : "text-muted-foreground hover:text-foreground"
+                }
+              `}
+              title="List View"
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
+          <Button variant="outline" size="sm" onClick={onImportClick}>
+            Replace
+          </Button>
+        </div>
       </div>
+
+      {/* Graph View */}
+      {viewMode === "graph" && (
+        <div className="h-[400px] border border-border rounded-lg overflow-hidden">
+          <CausalGraphView model={model} />
+        </div>
+      )}
+
+      {/* List View */}
+      {viewMode === "list" && (
+        <>
 
       {/* Search and filter */}
       <div className="flex gap-2">
@@ -219,6 +266,8 @@ export function CausalModelView({ model, onImportClick }: CausalModelViewProps) 
         <div className="text-center py-8 text-muted-foreground">
           No nodes match your search
         </div>
+      )}
+        </>
       )}
     </div>
   );

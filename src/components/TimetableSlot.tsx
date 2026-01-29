@@ -5,9 +5,10 @@ interface TimetableSlotProps {
   action: string;
   status: "pending" | "active" | "completed";
   causalImpact?: string;
+  onComplete?: () => void;
 }
 
-export function TimetableSlot({ time, action, status, causalImpact }: TimetableSlotProps) {
+export function TimetableSlot({ time, action, status, causalImpact, onComplete }: TimetableSlotProps) {
   return (
     <div
       className={`
@@ -20,8 +21,13 @@ export function TimetableSlot({ time, action, status, causalImpact }: TimetableS
         }
       `}
     >
-      {/* Status indicator */}
-      <div className="flex-shrink-0 mt-0.5">
+      {/* Status indicator - clickable for pending/active */}
+      <button
+        onClick={status !== "completed" ? onComplete : undefined}
+        disabled={status === "completed"}
+        className={`flex-shrink-0 mt-0.5 ${status !== "completed" ? "cursor-pointer hover:scale-110 transition-transform" : ""}`}
+        title={status !== "completed" ? "Mark as complete" : undefined}
+      >
         {status === "completed" ? (
           <div className="w-5 h-5 rounded-full bg-success/20 flex items-center justify-center">
             <Check className="w-3 h-3 text-success" />
@@ -31,9 +37,9 @@ export function TimetableSlot({ time, action, status, causalImpact }: TimetableS
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
           </div>
         ) : (
-          <div className="w-5 h-5 rounded-full border border-border" />
+          <div className="w-5 h-5 rounded-full border border-border hover:border-primary/50 transition-colors" />
         )}
-      </div>
+      </button>
 
       {/* Time */}
       <div className="flex-shrink-0 w-16">

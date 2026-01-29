@@ -1,0 +1,4 @@
+project_id = "humqnipkzqywnexhicsi"
+
+[functions.causal-analysis]
+verify_jwt = false

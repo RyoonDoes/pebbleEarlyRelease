@@ -2,3 +2,6 @@ project_id = "humqnipkzqywnexhicsi"
 
 [functions.causal-analysis]
 verify_jwt = false
+
+[functions.activity-parser]
+verify_jwt = false

@@ -3,14 +3,18 @@ import { Header } from "@/components/Header";
 import { ViewToggle } from "@/components/ViewToggle";
 import { CommandCard } from "@/components/CommandCard";
 import { TimetableSlot } from "@/components/TimetableSlot";
-import { FoodLogInput } from "@/components/FoodLogInput";
 import { CausalModelStatus } from "@/components/CausalModelStatus";
 import { WhatIfQuery } from "@/components/WhatIfQuery";
 import { CausalModelImport } from "@/components/CausalModelImport";
 import { CausalModelView } from "@/components/CausalModelView";
+import { InventoryManager } from "@/components/InventoryManager";
+import { TrackablesList } from "@/components/TrackablesList";
+import { ActivityLogList } from "@/components/ActivityLogList";
+import { ActivityInput } from "@/components/ActivityInput";
 import { usePebbleState } from "@/hooks/usePebbleState";
+import { useTracking } from "@/hooks/useTracking";
 
-type ViewType = "command" | "timetable" | "model";
+type ViewType = "command" | "timetable" | "model" | "inventory" | "trackables" | "activity";
 
 export default function Index() {
   const [activeView, setActiveView] = useState<ViewType>("command");
@@ -28,6 +32,25 @@ export default function Index() {
     setCausalModel,
   } = usePebbleState();
 
+  const {
+    inventory,
+    trackables,
+    activityLogs,
+    isLoading: isTrackingLoading,
+    addInventoryItem,
+    updateInventoryItem,
+    deleteInventoryItem,
+    addTrackable,
+    updateTrackable,
+    deleteTrackable,
+    getTodayTotal,
+    logActivity,
+  } = useTracking();
+
+  const handleViewChange = (view: ViewType) => {
+    setActiveView(view);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header onWhatIfClick={() => setIsWhatIfOpen(true)} />
@@ -43,8 +66,8 @@ export default function Index() {
         />
 
         {/* View toggle */}
-        <div className="flex items-center justify-between">
-          <ViewToggle activeView={activeView} onViewChange={setActiveView} />
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <ViewToggle activeView={activeView} onViewChange={handleViewChange} />
           <span className="text-xs font-mono text-muted-foreground">
             {new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
           </span>
@@ -53,7 +76,6 @@ export default function Index() {
         {/* Command View */}
         {activeView === "command" && (
           <div className="space-y-6 animate-fade-in">
-            {/* Active commands */}
             {commands.length > 0 ? (
               <div className="space-y-4">
                 {commands.map((command) => (
@@ -78,12 +100,12 @@ export default function Index() {
               </div>
             )}
 
-            {/* Food log input */}
+            {/* Activity input */}
             <div className="pt-4 border-t border-border">
               <p className="text-xs font-mono text-muted-foreground mb-3 uppercase tracking-wider">
                 Quick Log
               </p>
-              <FoodLogInput onSubmit={logFood} />
+              <ActivityInput trackables={trackables} onLogActivity={logActivity} />
             </div>
           </div>
         )}
@@ -104,6 +126,35 @@ export default function Index() {
                 onComplete={slot.status !== "completed" ? () => markTimetableComplete(slot.id) : undefined}
               />
             ))}
+          </div>
+        )}
+
+        {/* Inventory View */}
+        {activeView === "inventory" && (
+          <InventoryManager
+            inventory={inventory}
+            onAdd={addInventoryItem}
+            onUpdate={updateInventoryItem}
+            onDelete={deleteInventoryItem}
+          />
+        )}
+
+        {/* Trackables View */}
+        {activeView === "trackables" && (
+          <TrackablesList
+            trackables={trackables}
+            getTodayTotal={getTodayTotal}
+            onAdd={addTrackable}
+            onUpdate={updateTrackable}
+            onDelete={deleteTrackable}
+          />
+        )}
+
+        {/* Activity Log View */}
+        {activeView === "activity" && (
+          <div className="space-y-6">
+            <ActivityInput trackables={trackables} onLogActivity={logActivity} />
+            <ActivityLogList activityLogs={activityLogs} />
           </div>
         )}
 

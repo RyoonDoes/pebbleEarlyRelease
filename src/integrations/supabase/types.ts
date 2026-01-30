@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          activity_type: string
+          created_at: string
+          description: string
+          id: string
+          inferred_trackables: Json | null
+          logged_at: string
+          parsed_data: Json | null
+          raw_input: string | null
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string
+          description: string
+          id?: string
+          inferred_trackables?: Json | null
+          logged_at?: string
+          parsed_data?: Json | null
+          raw_input?: string | null
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string
+          description?: string
+          id?: string
+          inferred_trackables?: Json | null
+          logged_at?: string
+          parsed_data?: Json | null
+          raw_input?: string | null
+        }
+        Relationships: []
+      }
       inventory: {
         Row: {
           category: string | null
@@ -47,6 +80,77 @@ export type Database = {
           quantity?: number
           unit?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      trackable_values: {
+        Row: {
+          id: string
+          logged_at: string
+          notes: string | null
+          source: string | null
+          source_activity_id: string | null
+          trackable_id: string
+          value: number
+        }
+        Insert: {
+          id?: string
+          logged_at?: string
+          notes?: string | null
+          source?: string | null
+          source_activity_id?: string | null
+          trackable_id: string
+          value: number
+        }
+        Update: {
+          id?: string
+          logged_at?: string
+          notes?: string | null
+          source?: string | null
+          source_activity_id?: string | null
+          trackable_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trackable_values_trackable_id_fkey"
+            columns: ["trackable_id"]
+            isOneToOne: false
+            referencedRelation: "trackables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trackables: {
+        Row: {
+          category: string | null
+          created_at: string
+          daily_target: number | null
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          unit: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          daily_target?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          unit?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          daily_target?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          unit?: string | null
         }
         Relationships: []
       }

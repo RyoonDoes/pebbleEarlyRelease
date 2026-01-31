@@ -11,10 +11,11 @@ import { InventoryManager } from "@/components/InventoryManager";
 import { TrackablesList } from "@/components/TrackablesList";
 import { ActivityLogList } from "@/components/ActivityLogList";
 import { ActivityInput } from "@/components/ActivityInput";
+import { GoalTrackingView } from "@/components/GoalTrackingView";
 import { usePebbleState } from "@/hooks/usePebbleState";
 import { useTracking } from "@/hooks/useTracking";
 
-type ViewType = "command" | "timetable" | "model" | "inventory" | "trackables" | "activity";
+type ViewType = "command" | "timetable" | "model" | "inventory" | "trackables" | "activity" | "goals";
 
 export default function Index() {
   const [activeView, setActiveView] = useState<ViewType>("command");
@@ -156,6 +157,11 @@ export default function Index() {
             <ActivityInput trackables={trackables} inventory={inventory} onLogActivity={logActivity} />
             <ActivityLogList activityLogs={activityLogs} />
           </div>
+        )}
+
+        {/* Goals View */}
+        {activeView === "goals" && (
+          <GoalTrackingView />
         )}
 
         {/* Model View */}

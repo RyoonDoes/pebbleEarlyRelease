@@ -1,6 +1,6 @@
-import { LayoutGrid, Calendar, GitBranch, Package, Target, Activity } from "lucide-react";
+import { LayoutGrid, Calendar, GitBranch, Package, Target, Activity, Flag } from "lucide-react";
 
-type ViewType = "command" | "timetable" | "model" | "inventory" | "trackables" | "activity";
+type ViewType = "command" | "timetable" | "model" | "inventory" | "trackables" | "activity" | "goals";
 
 interface ViewToggleProps {
   activeView: ViewType;
@@ -16,6 +16,7 @@ interface TabConfig {
 const TABS: TabConfig[] = [
   { id: "command", icon: LayoutGrid, label: "Commands" },
   { id: "timetable", icon: Calendar, label: "Timetable" },
+  { id: "goals", icon: Flag, label: "Goals" },
   { id: "inventory", icon: Package, label: "Inventory" },
   { id: "trackables", icon: Target, label: "Trackables" },
   { id: "activity", icon: Activity, label: "Activity" },

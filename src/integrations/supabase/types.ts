@@ -47,6 +47,143 @@ export type Database = {
         }
         Relationships: []
       }
+      decision_impacts: {
+        Row: {
+          created_at: string
+          event_id: string
+          goal_rule_id: string
+          id: string
+          impact_details: Json | null
+          impact_type: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          goal_rule_id: string
+          id?: string
+          impact_details?: Json | null
+          impact_type: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          goal_rule_id?: string
+          id?: string
+          impact_details?: Json | null
+          impact_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_impacts_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "normalized_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_impacts_goal_rule_id_fkey"
+            columns: ["goal_rule_id"]
+            isOneToOne: false
+            referencedRelation: "goal_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goal_evaluations: {
+        Row: {
+          completions_in_window: number
+          confidence: number | null
+          details: Json | null
+          evaluated_at: string
+          goal_rule_id: string
+          id: string
+          last_fail_at: string | null
+          last_fail_reason: string | null
+          last_success_at: string | null
+          pending_windows: Json | null
+          required_in_window: number
+          status: string
+        }
+        Insert: {
+          completions_in_window?: number
+          confidence?: number | null
+          details?: Json | null
+          evaluated_at?: string
+          goal_rule_id: string
+          id?: string
+          last_fail_at?: string | null
+          last_fail_reason?: string | null
+          last_success_at?: string | null
+          pending_windows?: Json | null
+          required_in_window?: number
+          status: string
+        }
+        Update: {
+          completions_in_window?: number
+          confidence?: number | null
+          details?: Json | null
+          evaluated_at?: string
+          goal_rule_id?: string
+          id?: string
+          last_fail_at?: string | null
+          last_fail_reason?: string | null
+          last_success_at?: string | null
+          pending_windows?: Json | null
+          required_in_window?: number
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goal_evaluations_goal_rule_id_fkey"
+            columns: ["goal_rule_id"]
+            isOneToOne: false
+            referencedRelation: "goal_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goal_rules: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          priority: number | null
+          required_completions: number | null
+          rolling_window_days: number | null
+          rule_config: Json
+          rule_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          priority?: number | null
+          required_completions?: number | null
+          rolling_window_days?: number | null
+          rule_config: Json
+          rule_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          priority?: number | null
+          required_completions?: number | null
+          rolling_window_days?: number | null
+          rule_config?: Json
+          rule_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inventory: {
         Row: {
           category: string | null
@@ -80,6 +217,45 @@ export type Database = {
           quantity?: number
           unit?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      normalized_events: {
+        Row: {
+          confidence: number | null
+          created_at: string
+          event_name: string
+          event_type: string
+          id: string
+          magnitude: number | null
+          metadata: Json | null
+          occurred_at: string
+          source_id: string | null
+          source_type: string | null
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string
+          event_name: string
+          event_type: string
+          id?: string
+          magnitude?: number | null
+          metadata?: Json | null
+          occurred_at: string
+          source_id?: string | null
+          source_type?: string | null
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string
+          event_name?: string
+          event_type?: string
+          id?: string
+          magnitude?: number | null
+          metadata?: Json | null
+          occurred_at?: string
+          source_id?: string | null
+          source_type?: string | null
         }
         Relationships: []
       }

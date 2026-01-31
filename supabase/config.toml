@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.activity-parser]
 verify_jwt = false
+
+[functions.goal-evaluator]
+verify_jwt = false

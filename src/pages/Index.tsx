@@ -105,7 +105,7 @@ export default function Index() {
               <p className="text-xs font-mono text-muted-foreground mb-3 uppercase tracking-wider">
                 Quick Log
               </p>
-              <ActivityInput trackables={trackables} onLogActivity={logActivity} />
+              <ActivityInput trackables={trackables} inventory={inventory} onLogActivity={logActivity} />
             </div>
           </div>
         )}
@@ -153,7 +153,7 @@ export default function Index() {
         {/* Activity Log View */}
         {activeView === "activity" && (
           <div className="space-y-6">
-            <ActivityInput trackables={trackables} onLogActivity={logActivity} />
+            <ActivityInput trackables={trackables} inventory={inventory} onLogActivity={logActivity} />
             <ActivityLogList activityLogs={activityLogs} />
           </div>
         )}

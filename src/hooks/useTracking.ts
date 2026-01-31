@@ -180,13 +180,14 @@ export function useTracking() {
     return { data, error };
   }, []);
 
-  // Activity log operations
+  // Activity log operations with optional inventory deductions
   const logActivity = useCallback(async (
     activityType: string,
     description: string,
     rawInput?: string,
     parsedData?: Record<string, unknown>,
-    inferredTrackables?: Record<string, number>
+    inferredTrackables?: Record<string, number>,
+    inventoryDeductions?: Record<string, number>
   ) => {
     const { data, error } = await supabase
       .from("activity_logs")
@@ -214,9 +215,16 @@ export function useTracking() {
           }
         }
       }
+
+      // Deduct from inventory if applicable
+      if (inventoryDeductions) {
+        for (const [itemName, amount] of Object.entries(inventoryDeductions)) {
+          await deductFromInventory(itemName, amount);
+        }
+      }
     }
     return { data: data as ActivityLog | null, error };
-  }, [trackables, logTrackableValue]);
+  }, [trackables, logTrackableValue, deductFromInventory]);
 
   // Get today's values for a trackable
   const getTodayTotal = useCallback((trackableId: string) => {

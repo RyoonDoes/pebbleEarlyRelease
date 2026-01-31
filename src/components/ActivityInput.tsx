@@ -4,16 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import type { Trackable } from "@/hooks/useTracking";
+import type { Trackable, InventoryItem } from "@/hooks/useTracking";
 
 interface ActivityInputProps {
   trackables: Trackable[];
+  inventory: InventoryItem[];
   onLogActivity: (
     activityType: string,
     description: string,
     rawInput?: string,
     parsedData?: Record<string, unknown>,
-    inferredTrackables?: Record<string, number>
+    inferredTrackables?: Record<string, number>,
+    inventoryDeductions?: Record<string, number>
   ) => Promise<{ data: unknown; error: unknown }>;
 }
 
@@ -26,7 +28,7 @@ const ACTIVITY_PLACEHOLDERS: Record<ActivityType, string> = {
   other: "Describe the activity... e.g., 'Sauna for 20 minutes'",
 };
 
-export function ActivityInput({ trackables, onLogActivity }: ActivityInputProps) {
+export function ActivityInput({ trackables, inventory, onLogActivity }: ActivityInputProps) {
   const [input, setInput] = useState("");
   const [activityType, setActivityType] = useState<ActivityType>("food");
   const [isLoading, setIsLoading] = useState(false);
@@ -48,6 +50,11 @@ export function ActivityInput({ trackables, onLogActivity }: ActivityInputProps)
             category: t.category, 
             unit: t.unit 
           })),
+          inventory: inventory.map(i => ({
+            name: i.name,
+            quantity: i.quantity,
+            unit: i.unit
+          })),
         },
       });
 
@@ -61,7 +68,8 @@ export function ActivityInput({ trackables, onLogActivity }: ActivityInputProps)
           data.description || input.trim(),
           input.trim(),
           data.parsed_data,
-          data.inferred_trackables
+          data.inferred_trackables,
+          data.inventory_deductions
         );
       }
       
